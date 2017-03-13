@@ -8,7 +8,9 @@ package funwithcommands.gui.controller;
 import funwithcommands.gui.command.ICommand;
 import funwithcommands.gui.model.WordModel;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -41,6 +43,8 @@ public class MainViewController implements Initializable
 
     private LinkedList<ICommand> executedCommands;
     private LinkedList<ICommand> undoneCommands;
+    
+    private List<String> removedWords = new ArrayList<>();
 
     /**
      * Initializes the controller class.
@@ -52,14 +56,47 @@ public class MainViewController implements Initializable
         executedCommands = new LinkedList<>();
         undoneCommands = new LinkedList<>();
         listWords.setItems(model.getWordList());
-        txtInput.requestFocus();
         updateCommandMenuItemsState();
+        txtInput.requestFocus();
     }
 
     @FXML
     private void onButtonClearAll(ActionEvent event)
     {
         //TODO implement Clear all command here!!!
+        ICommand command = new ICommand() //We create a new ICommand object:
+        {
+
+            @Override
+            public void execute() //When executed will add word to model:
+            {
+                removedWords.clear();
+                
+                for (String word : listWords.getItems())
+                {
+                    removedWords.add(word);
+                }
+                
+                model.clearWords();
+            }
+
+            @Override
+            public void undo() //When undone will remove same word:
+            {
+                /*for (String word : removedWords)
+                {
+                    model.addWord(word);
+                    
+                }
+                */
+                model.setWordList(removedWords);
+                removedWords.clear();
+            }
+        };
+        command.execute(); //We have to execute the ICommand for stuff to happen!
+        executedCommands.add(command); //Also we must add it to the list of executed commands if it should be undoable.
+        undoneCommands.clear(); //We changed the current "thread of commands" an therefore we should not be able to redo something that we no longer did wan't to do, or didn't wan't to do... Arrgh, you get it, right?
+        updateCommandMenuItemsState(); //Som UX stuff, yeah sweet..
     }
 
     /**
@@ -89,9 +126,7 @@ public class MainViewController implements Initializable
                     model.removeWord(word);
                 }
             };
-            
-            
-            
+
             command.execute(); //We have to execute the ICommand for stuff to happen!
             executedCommands.add(command); //Also we must add it to the list of executed commands if it should be undoable.
             undoneCommands.clear(); //We changed the current "thread of commands" an therefore we should not be able to redo something that we no longer did wan't to do, or didn't wan't to do... Arrgh, you get it, right?
@@ -144,8 +179,7 @@ public class MainViewController implements Initializable
         if (executedCommands.isEmpty())
         {
             menuUndo.setDisable(true);
-        }
-        else
+        } else
         {
             menuUndo.setDisable(false);
         }
@@ -153,8 +187,7 @@ public class MainViewController implements Initializable
         if (undoneCommands.isEmpty())
         {
             menuRedo.setDisable(true);
-        }
-        else
+        } else
         {
             menuRedo.setDisable(false);
         }

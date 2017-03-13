@@ -5,6 +5,7 @@
  */
 package funwithcommands.gui.model;
 
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -31,6 +32,11 @@ public class WordModel
     {
         return words;
     }
+    
+    public void setWordList(List<String> wordList)
+    {
+        words.addAll(wordList);
+    }
 
     /**
      * Adds a new word to the model.
@@ -50,6 +56,11 @@ public class WordModel
     public void removeWord(String word)
     {
         words.remove(word);
+    }
+    
+    public void clearWords()
+    {
+        words.clear();
     }
 
 }
