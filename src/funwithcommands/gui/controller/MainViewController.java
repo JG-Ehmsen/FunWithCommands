@@ -43,8 +43,6 @@ public class MainViewController implements Initializable
 
     private LinkedList<ICommand> executedCommands;
     private LinkedList<ICommand> undoneCommands;
-    
-    private List<String> removedWords = new ArrayList<>();
 
     /**
      * Initializes the controller class.
@@ -63,21 +61,24 @@ public class MainViewController implements Initializable
     @FXML
     private void onButtonClearAll(ActionEvent event)
     {
-        //TODO implement Clear all command here!!!
+        if (!listWords.getItems().isEmpty())
+        {
         ICommand command = new ICommand() //We create a new ICommand object:
         {
+            private List<String> removedWords = new ArrayList<>();
 
             @Override
             public void execute() //When executed will add word to model:
             {
                 removedWords.clear();
-                
+
                 for (String word : listWords.getItems())
                 {
                     removedWords.add(word);
                 }
-                
+
                 model.clearWords();
+                
             }
 
             @Override
@@ -88,7 +89,7 @@ public class MainViewController implements Initializable
                     model.addWord(word);
                     
                 }
-                */
+                 */
                 model.setWordList(removedWords);
                 removedWords.clear();
             }
@@ -97,6 +98,7 @@ public class MainViewController implements Initializable
         executedCommands.add(command); //Also we must add it to the list of executed commands if it should be undoable.
         undoneCommands.clear(); //We changed the current "thread of commands" an therefore we should not be able to redo something that we no longer did wan't to do, or didn't wan't to do... Arrgh, you get it, right?
         updateCommandMenuItemsState(); //Som UX stuff, yeah sweet..
+    }
     }
 
     /**
